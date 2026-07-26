@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- Master HDFS Address -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://namenode:9000</value>
+        <description>Default file system URI for Hadoop</description>
+    </property>
+
+    <!-- Buffer size for read/write operations -->
+    <property>
+        <name>io.file.buffer.size</name>
+        <value>131072</value>
+    </property>
+<property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
+<property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
+</configuration>
