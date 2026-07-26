@@ -117,11 +117,23 @@ def ingest_local_to_hdfs(spark: SparkSession, local_dir: str, hdfs_dir: str) -> 
         raise e
 
 
-def clean_and_transform_data(spark: SparkSession, hdfs_csv_path: str, hdfs_json_path: str):
+def clean_and_transform_data(spark: SparkSession, hdfs_csv_path, hdfs_json_path):
     """
-    Reads CSV and JSON raw data from HDFS, performs cleaning, category mapping,
+    Reads CSV and JSON raw data from HDFS or local filesystem, performs cleaning, category mapping,
     casting, null handling, and feature engineering.
     """
+    # Expand wildcard paths locally when not reading from HDFS to prevent
+    # Windows Hadoop Globber NativeIO UnsatisfiedLinkError
+    if isinstance(hdfs_csv_path, str) and "*" in hdfs_csv_path and not hdfs_csv_path.startswith("hdfs://"):
+        matched_csv = glob.glob(hdfs_csv_path)
+        if matched_csv:
+            hdfs_csv_path = matched_csv
+
+    if isinstance(hdfs_json_path, str) and "*" in hdfs_json_path and not hdfs_json_path.startswith("hdfs://"):
+        matched_json = glob.glob(hdfs_json_path)
+        if matched_json:
+            hdfs_json_path = matched_json
+
     print("[CLEANING] Step 1: Loading raw CSV data...")
     # Read raw CSVs with header and multiline support
     df_raw = spark.read \

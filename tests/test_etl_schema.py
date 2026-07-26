@@ -56,10 +56,16 @@ def spark():
             .config("spark.driver.bindAddress", "127.0.0.1") \
             .config("spark.sql.shuffle.partitions", "1") \
             .getOrCreate()
-        yield session
-        session.stop()
     except Exception as e:
         pytest.skip(f"PySpark JVM environment not available locally: {e}")
+
+    try:
+        yield session
+    finally:
+        try:
+            session.stop()
+        except Exception:
+            pass
 
 
 def test_clean_and_transform_data_schema(spark):
