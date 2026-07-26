@@ -64,6 +64,7 @@ docker ps
 ```bash
 docker exec jupyter-lab spark-submit /home/jovyan/src/etl_module.py data/mock
 ```
+- Put data files of trending_youtube inside folder data/raw
 
 - Run with Full Raw Dataset:
 ```bash
