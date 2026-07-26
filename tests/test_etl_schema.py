@@ -33,11 +33,27 @@ def spark():
     Fixture for creating a PySpark session for testing.
     Skips test if Java/PySpark environment is not configured locally.
     """
+    import shutil
+    java_home = os.environ.get("JAVA_HOME")
+    if java_home:
+        java_home_clean = java_home.rstrip("/\\")
+        if java_home_clean.endswith("bin"):
+            java_home_clean = os.path.dirname(java_home_clean)
+            os.environ["JAVA_HOME"] = java_home_clean
+            java_home = java_home_clean
+
+    if java_home and not os.path.exists(java_home):
+        pytest.skip(f"JAVA_HOME path is invalid or does not exist: '{java_home}'")
+    if not shutil.which("java") and not (java_home and os.path.exists(os.path.join(java_home, "bin", "java.exe"))):
+        pytest.skip("Java (JDK) environment not found on PATH or JAVA_HOME.")
+
     try:
         from pyspark.sql import SparkSession
         session = SparkSession.builder \
             .appName("ETLSchemaTest") \
             .master("local[1]") \
+            .config("spark.driver.host", "127.0.0.1") \
+            .config("spark.driver.bindAddress", "127.0.0.1") \
             .config("spark.sql.shuffle.partitions", "1") \
             .getOrCreate()
         yield session
@@ -52,8 +68,8 @@ def test_clean_and_transform_data_schema(spark):
     """
     from pyspark.sql.types import DateType, TimestampType, LongType, DoubleType, ArrayType
 
-    local_csv = "data/mock/*.csv"
-    local_json = "data/mock/*.json"
+    local_csv = os.path.abspath("data/mock/*.csv")
+    local_json = os.path.abspath("data/mock/*.json")
 
     df_cleaned = clean_and_transform_data(spark, local_csv, local_json)
 
@@ -95,8 +111,8 @@ def test_derived_metrics_correctness(spark):
     """
     Tests derived metrics logic (engagement rate, like ratio, total days trending).
     """
-    local_csv = "data/mock/*.csv"
-    local_json = "data/mock/*.json"
+    local_csv = os.path.abspath("data/mock/*.csv")
+    local_json = os.path.abspath("data/mock/*.json")
 
     df_cleaned = clean_and_transform_data(spark, local_csv, local_json)
     row = df_cleaned.filter(df_cleaned.views > 0).first()

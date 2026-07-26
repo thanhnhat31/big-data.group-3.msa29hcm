@@ -134,7 +134,7 @@ def clean_and_transform_data(spark: SparkSession, hdfs_csv_path: str, hdfs_json_
     # Regex anchored to uppercase 2-letter prefix immediately before 'videos.' to avoid false matches
     df_raw = df_raw.withColumn(
         "country",
-        F.upper(F.regexp_extract(F.input_file_name(), r"/([A-Za-z]{2})videos\.", 1))
+        F.upper(F.regexp_extract(F.input_file_name(), r"[/\\]([A-Za-z]{2})videos\.", 1))
     )
 
     print("[CLEANING] Step 2: Parsing JSON category files...")

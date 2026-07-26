@@ -47,6 +47,7 @@ services:
   hive-metastore:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-metastore
+    restart: unless-stopped
     environment:
       - SERVICE_PRECONDITION=namenode:9870 hive-metastore-postgresql:5432
     command: /opt/hive/bin/hive --service metastore
@@ -63,8 +64,11 @@ services:
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
     container_name: hive-server
+    restart: unless-stopped
     environment:
       - SERVICE_PRECONDITION=hive-metastore:9083
+      - HADOOP_HEAPSIZE=2048
+    command: /opt/hive/bin/hive --service hiveserver2
     ports:
       - "10000:10000" # JDBC port to connect SQL
     networks:

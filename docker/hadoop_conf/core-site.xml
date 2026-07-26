@@ -15,4 +15,6 @@
     </property>
 <property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
 <property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
+<property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
+<property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
 </configuration>
