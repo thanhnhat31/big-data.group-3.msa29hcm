@@ -55,3 +55,46 @@ docker ps
   - **Hive Metastore (Thrift RPC)**: `localhost:9083`
   - **HDFS Master (RPC)**: `localhost:9000`
   - **Spark Master (RPC)**: `spark://spark-master:7077` (Port `7077`)
+
+
+## III. Data Ingestion & Processing (ETL Pipeline)
+
+### 3.1. Run ETL Script
+- Run with Mock Dataset (recommended for fast testing):
+```bash
+docker exec jupyter-lab spark-submit /home/jovyan/src/etl_module.py data/mock
+```
+- Put data files of trending_youtube inside folder data/raw
+
+- Run with Full Raw Dataset:
+```bash
+docker exec jupyter-lab spark-submit /home/jovyan/src/etl_module.py data/raw/trending_youtube
+```
+
+### 3.2. Verify Imported Data
+
+- Run Verification Script:
+```bash
+docker exec jupyter-lab spark-submit --driver-java-options "-Dlog4j.logLevel=ERROR" /home/jovyan/tests/verify_import.py
+```
+
+- Run Schema Unit Tests:
+```bash
+pytest tests/test_etl_schema.py -v
+```
+
+- Check HDFS Parquet Partition Directories:
+```bash
+docker exec namenode hdfs dfs -ls /youtube/processed/parquet
+```
+
+- **Query Cleaned Data in JupyterLab / PySpark**:
+```python
+import sys, os
+sys.path.append(os.path.abspath(".."))
+
+from src.etl_module import get_spark_session
+
+spark = get_spark_session()
+spark.sql("SELECT country, count(*) as total_videos FROM youtube_db.cleaned_videos GROUP BY country").show()
+```
