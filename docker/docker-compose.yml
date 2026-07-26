@@ -112,6 +112,7 @@ services:
       - JUPYTER_ENABLE_LAB=yes
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_TOKEN=youtube135
+      - PYTHONPATH=/home/jovyan
     volumes:
       - ../notebooks:/home/jovyan/notebooks
       - ../src:/home/jovyan/src
