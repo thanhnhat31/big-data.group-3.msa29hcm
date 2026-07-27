@@ -1,4 +1,4 @@
-name: youtube-trending-analysis
+name: credit-transaction
 
 services:
   # ==========================================
@@ -115,7 +115,7 @@ services:
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - SPARK_MASTER=spark://spark-master:7077
-      - JUPYTER_TOKEN=youtube135
+      - JUPYTER_TOKEN=credit135
       - PYTHONPATH=/home/jovyan
     volumes:
       - ../notebooks:/home/jovyan/notebooks
