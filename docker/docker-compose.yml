@@ -11,10 +11,10 @@ services:
       - "9870:9870" # Web UI of HDFS
       - "9000:9000" # Internal communication port
     environment:
-      - CLUSTER_NAME=youtube-cluster
+      - CLUSTER_NAME=credit-transaction-cluster
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
     networks:
-      - youtube-network
+      - credit-transaction-network
     volumes:
       - namenode_data:/hadoop/dfs/name
       - ./hadoop_conf:/etc/hadoop
@@ -26,7 +26,7 @@ services:
       - SERVICE_PRECONDITION=namenode:9870
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
     networks:
-      - youtube-network
+      - credit-transaction-network
     volumes:
       - datanode_data:/hadoop/dfs/data
       - ./hadoop_conf:/etc/hadoop
@@ -40,7 +40,7 @@ services:
     image: bde2020/hive-metastore-postgresql:2.3.0
     container_name: hive-metastore-postgresql
     networks:
-      - youtube-network
+      - credit-transaction-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -89,7 +89,7 @@ services:
       - "8080:8080" # Web UI of Spark Master
       - "7077:7077"
     networks:
-      - youtube-network
+      - credit-transaction-network
 
   spark-worker:
     image: docker.io/apache/spark:3.5.2
@@ -99,7 +99,7 @@ services:
       - SPARK_WORKER_CORES=2
       - SPARK_WORKER_MEMORY=4G
     networks:
-      - youtube-network
+      - credit-transaction-network
     depends_on:
       - spark-master
 
@@ -123,7 +123,7 @@ services:
       - ../data:/home/jovyan/data
       - ../tests:/home/jovyan/tests
     networks:
-      - youtube-network
+      - credit-transaction-network
     depends_on:
       - spark-master
       - hive-metastore
