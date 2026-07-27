@@ -47,7 +47,7 @@ docker ps
   | :--- | :--- | :--- | :--- |
   | **HDFS NameNode** | [http://localhost:9870](http://localhost:9870) | N/A | Check HDFS storage status & browse filesystem |
   | **Spark Master** | [http://localhost:8080](http://localhost:8080) | N/A | Monitor Spark cluster, workers & running applications |
-  | **JupyterLab** | [http://localhost:8888/lab?token=youtube135](http://localhost:8888/lab?token=youtube135) | Token: `youtube135` | IDE to write and execute PySpark / Data analysis scripts |
+  | **JupyterLab** | [http://localhost:8888/lab?token=credit135](http://localhost:8888/lab?token=credit135) | Token: `credit135` | IDE to write and execute PySpark / Data analysis scripts |
   | **Spark App UI** | [http://localhost:4040](http://localhost:4040) | N/A | Detailed DAG & Task progress for active Spark jobs |
 
 - **Service Connection Ports**:
@@ -62,39 +62,29 @@ docker ps
 ### 3.1. Run ETL Script
 - Run with Mock Dataset (recommended for fast testing):
 ```bash
-docker exec jupyter-lab spark-submit /home/jovyan/src/etl_module.py data/mock
+docker exec jupyter-lab spark-submit --driver-memory 4g /home/jovyan/src/etl_module_credit_transaction.py data/mock
 ```
-- Put data files of trending_youtube inside folder data/raw
+- Put data files of credit transaction fraud inside folder data/raw
 
 - Run with Full Raw Dataset:
 ```bash
-docker exec jupyter-lab spark-submit /home/jovyan/src/etl_module.py data/raw/trending_youtube
+docker exec jupyter-lab spark-submit --driver-memory 4g /home/jovyan/src/etl_module_credit_transaction.py data/raw/credit_transaction_fraud
 ```
 
 ### 3.2. Verify Imported Data
 
 - Run Verification Script:
 ```bash
-docker exec jupyter-lab spark-submit --driver-java-options "-Dlog4j.logLevel=ERROR" /home/jovyan/tests/verify_import.py
+docker exec jupyter-lab spark-submit --driver-java-options "-Dlog4j.logLevel=ERROR" /home/jovyan/tests/verify_credit_transaction_import.py
 ```
 
 - Run Schema Unit Tests:
 ```bash
-pytest tests/test_etl_schema.py -v
+pytest tests/test_credit_transaction_etl.py -v
 ```
 
 - Check HDFS Parquet Partition Directories:
 ```bash
-docker exec namenode hdfs dfs -ls /youtube/processed/parquet
+docker exec namenode hdfs dfs -ls /credit_transaction/processed/parquet
 ```
 
-- **Query Cleaned Data in JupyterLab / PySpark**:
-```python
-import sys, os
-sys.path.append(os.path.abspath(".."))
-
-from src.etl_module import get_spark_session
-
-spark = get_spark_session()
-spark.sql("SELECT country, count(*) as total_videos FROM youtube_db.cleaned_videos GROUP BY country").show()
-```
