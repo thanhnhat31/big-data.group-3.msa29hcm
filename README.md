@@ -1,15 +1,13 @@
-# Trending YouTube Video Statistics
+# Credit Card Transaction Fraud Detection
 
 ## I. Problem Statement
-- Subject: Trending YouTube Video Statistics</br>
-https://www.kaggle.com/datasets/datasnaek/youtube-new
-Description: The dataset contains information about trending videos on YouTube by country (title, views, likes, category, etc.).
-Suggested implementation:
-- Use Spark SQL to analyze trends over time or by country.
-- Identify videos with the fastest spread.
-- Use Hive to store and query analytics tables by country.
-- Use MLib for Machine Learning (clustering).
-- Use GraphFrames for graph analysis.
+- **Subject**: Credit Card Transaction Fraud Detection
+- **Description**: The dataset contains simulated credit card transaction data generated on a monthly basis (from April 2018 to March 2020). It includes transaction metadata (`TRANSACTION_ID`, `TX_DATETIME`, `CUSTOMER_ID`, `TERMINAL_ID`, `TX_AMOUNT`), datetime indicators, and ground truth fraud labels (`TX_FRAUD`, `TX_FRAUD_SCENARIO`).
+- **Implementation Approach**:
+  - **Spark DataFrame API**: Perform high-performance distributed data ingestion, data cleaning, schema casting, null handling, and windowed feature aggregations (`customer_tx_count`, `customer_avg_amount`, `terminal_tx_count`, `is_weekend`, `is_night`).
+  - **Hive Data Warehouse**: Store processed transaction data in Parquet/ORC format partitioned by transaction year-month (`tx_year_month`).
+  - **Spark MLlib**: Train machine learning models for fraud classification and risk scoring.
+  - **GraphFrames**: Analyze transaction network graphs between customers (`CUSTOMER_ID`) and terminals (`TERMINAL_ID`).
 
 
 ## II. Setup Environment
@@ -22,7 +20,7 @@ python -m venv .venv
 ```
 - Activate virtual environment
 ```bash
-# Activate virtual environment
+# Activate virtual environment (Windows PowerShell)
 .\.venv\Scripts\activate
 ```
 - Install dependencies
@@ -57,28 +55,27 @@ docker ps
   - **Spark Master (RPC)**: `spark://spark-master:7077` (Port `7077`)
 
 
-## III. Data Ingestion & Processing (ETL Pipeline)
+## III. Data Ingestion & Processing (Spark DataFrame ETL Pipeline)
 
-### 3.1. Run ETL Script
-- Run with Mock Dataset (recommended for fast testing):
+### 3.1. Run ETL Script (Spark DataFrame)
+- Run with Mock Dataset (recommended for fast local testing):
 ```bash
 docker exec jupyter-lab spark-submit --driver-memory 4g /home/jovyan/src/etl_module_credit_transaction.py data/mock
 ```
-- Put data files of credit transaction fraud inside folder data/raw
 
-- Run with Full Raw Dataset:
+- Run with Full Raw Simulated Monthly Dataset:
 ```bash
-docker exec jupyter-lab spark-submit --driver-memory 4g /home/jovyan/src/etl_module_credit_transaction.py data/raw/credit_transaction_fraud
+docker exec jupyter-lab spark-submit --driver-memory 4g /home/jovyan/src/etl_module_credit_transaction.py data/simulated-data-raw-csv
 ```
 
-### 3.2. Verify Imported Data
+### 3.2. Verify Imported Data & DataFrames
 
 - Run Verification Script:
 ```bash
 docker exec jupyter-lab spark-submit --driver-java-options "-Dlog4j.logLevel=ERROR" /home/jovyan/tests/verify_credit_transaction_import.py
 ```
 
-- Run Schema Unit Tests:
+- Run PySpark Schema & Transformation Unit Tests:
 ```bash
 pytest tests/test_credit_transaction_etl.py -v
 ```
@@ -87,4 +84,3 @@ pytest tests/test_credit_transaction_etl.py -v
 ```bash
 docker exec namenode hdfs dfs -ls /credit_transaction/processed/parquet
 ```
-
