@@ -114,9 +114,15 @@
 <property><name>dfs.namenode.rpc-bind-host</name><value>0.0.0.0</value></property>
 <property><name>dfs.namenode.servicerpc-bind-host</name><value>0.0.0.0</value></property>
 <property><name>dfs.namenode.http-bind-host</name><value>0.0.0.0</value></property>
+<<<<<<< HEAD
 <property><name>dfs.datanode.data.dir</name><value>file:///hadoop/dfs/data</value></property>
 <property><name>dfs.namenode.rpc-bind-host</name><value>0.0.0.0</value></property>
 <property><name>dfs.namenode.servicerpc-bind-host</name><value>0.0.0.0</value></property>
+=======
+<property><name>dfs.namenode.https-bind-host</name><value>0.0.0.0</value></property>
+<property><name>dfs.client.use.datanode.hostname</name><value>true</value></property>
+<property><name>dfs.datanode.use.datanode.hostname</name><value>true</value></property>
+>>>>>>> c10923b19dc4387ad4d6e688b99903adbb9eed78
 <property><name>dfs.namenode.http-bind-host</name><value>0.0.0.0</value></property>
 <property><name>dfs.namenode.https-bind-host</name><value>0.0.0.0</value></property>
 <property><name>dfs.client.use.datanode.hostname</name><value>true</value></property>

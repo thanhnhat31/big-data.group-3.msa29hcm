@@ -218,4 +218,9 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Raw data
+<<<<<<< HEAD
 data/raw/
+=======
+data/raw/
+data/simulated-data-raw-csv/
+>>>>>>> c10923b19dc4387ad4d6e688b99903adbb9eed78
