@@ -104,22 +104,14 @@ services:
       - spark-master
 
   # ==========================================
-<<<<<<< HEAD
   # 4. JUPYTERLAB (IDE)
-=======
-  # 4. JUPYTERLAB (IDE )
->>>>>>> c10923b19dc4387ad4d6e688b99903adbb9eed78
   # ==========================================
   jupyter-lab:
     image: jupyter/all-spark-notebook:latest
     container_name: jupyter-lab
     ports:
       - "8888:8888" # Open the browser at http://localhost:8888
-<<<<<<< HEAD
       - "4041:4040" # Spark Application UI
-=======
-      - "4040:4040" # Spark Application UI
->>>>>>> c10923b19dc4387ad4d6e688b99903adbb9eed78
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - SPARK_MASTER=spark://spark-master:7077
@@ -130,11 +122,8 @@ services:
       - ../src:/home/jovyan/src
       - ../data:/home/jovyan/data
       - ../tests:/home/jovyan/tests
-<<<<<<< HEAD
       # Mount hive-site.xml vào thư mục conf tùy chỉnh để tránh lỗi busy device
       - ./hadoop_conf/hive-site.xml:/home/jovyan/hive-site.xml
-=======
->>>>>>> c10923b19dc4387ad4d6e688b99903adbb9eed78
     networks:
       - credit-transaction-network
     depends_on:
