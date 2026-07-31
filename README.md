@@ -1,14 +1,14 @@
-# Trending YouTube Video Statistics
+# Credit Card Fraud Detection
 
 ## I. Problem Statement
-- Subject: Trending YouTube Video Statistics</br>
-https://www.kaggle.com/datasets/datasnaek/youtube-new
-Description: The dataset contains information about trending videos on YouTube by country (title, views, likes, category, etc.).
+- Subject: Credit Card Fraud Detection</br>
+https://www.kaggle.com/mlg-ulb/creditcardfraud
+Description: The dataset contains information about transactions made by credit cardholders, including fraudulent and non-fraudulent transactions.
 Suggested implementation:
-- Use Spark SQL to analyze trends over time or by country.
-- Identify videos with the fastest spread.
-- Use Hive to store and query analytics tables by country.
-- Use MLib for Machine Learning (clustering).
+- Use Spark SQL to analyze transactions by time or customer.
+- Identify transactions with the fastest spread.
+- Use Hive to store and query analytics tables by customer.
+- Use MLlib for Machine Learning (clustering).
 - Use GraphFrames for graph analysis.
 
 
