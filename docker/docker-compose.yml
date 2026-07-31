@@ -52,7 +52,7 @@ services:
       - SERVICE_PRECONDITION=namenode:9870 hive-metastore-postgresql:5432
     command: /opt/hive/bin/hive --service metastore
     networks:
-      - youtube-network
+      - credit-transaction-network
     ports:
       - "9083:9083"
     volumes:
@@ -72,7 +72,7 @@ services:
     ports:
       - "10000:10000" # JDBC port to connect SQL
     networks:
-      - youtube-network
+      - credit-transaction-network
     volumes:
       - ./hadoop_conf/hive-site.xml:/opt/hive/conf/hive-site.xml
     depends_on:
@@ -129,7 +129,7 @@ services:
       - hive-metastore
 
 networks:
-  youtube-network:
+  credit-transaction-network:
     driver: bridge
 
 volumes:
