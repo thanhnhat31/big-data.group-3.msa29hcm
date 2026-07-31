@@ -37,12 +37,21 @@ services:
   # 2. CỤM HIVE (Data Warehouse & Schema)
   # ==========================================
   hive-metastore-postgresql:
-    image: bde2020/hive-metastore-postgresql:2.3.0
+    image: postgres:13
     container_name: hive-metastore-postgresql
+    environment:
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+      POSTGRES_DB: metastore
     networks:
       - credit-transaction-network
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   hive-metastore:
     image: bde2020/hive:2.3.2-postgresql-metastore
@@ -52,7 +61,7 @@ services:
       - SERVICE_PRECONDITION=namenode:9870 hive-metastore-postgresql:5432
     command: /opt/hive/bin/hive --service metastore
     networks:
-      - youtube-network
+      - credit-transaction-network
     ports:
       - "9083:9083"
     volumes:
@@ -72,7 +81,7 @@ services:
     ports:
       - "10000:10000" # JDBC port to connect SQL
     networks:
-      - youtube-network
+      - credit-transaction-network
     volumes:
       - ./hadoop_conf/hive-site.xml:/opt/hive/conf/hive-site.xml
     depends_on:
@@ -104,14 +113,14 @@ services:
       - spark-master
 
   # ==========================================
-  # 4. JUPYTERLAB (IDE )
+  # 4. JUPYTERLAB (IDE)
   # ==========================================
   jupyter-lab:
     image: jupyter/all-spark-notebook:latest
     container_name: jupyter-lab
     ports:
       - "8888:8888" # Open the browser at http://localhost:8888
-      - "4040:4040" # Spark Application UI
+      - "4041:4040" # Spark Application UI
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - SPARK_MASTER=spark://spark-master:7077
@@ -122,6 +131,10 @@ services:
       - ../src:/home/jovyan/src
       - ../data:/home/jovyan/data
       - ../tests:/home/jovyan/tests
+      # Mount full dataset directly (symlink breaks on Docker Desktop Mac)
+      - ../simulated-data-raw-csv:/home/jovyan/data/simulated-data-raw-csv
+      # Mount hive-site.xml vào thư mục conf tùy chỉnh để tránh lỗi busy device
+      - ./hadoop_conf/hive-site.xml:/home/jovyan/hive-site.xml
     networks:
       - credit-transaction-network
     depends_on:
@@ -129,7 +142,7 @@ services:
       - hive-metastore
 
 networks:
-  youtube-network:
+  credit-transaction-network:
     driver: bridge
 
 volumes:
