@@ -1,26 +1,25 @@
-youtube-trending-bigdata/
-├── data/                       # Dữ liệu cục bộ (Sẽ được thiết lập block trong .gitignore)
-│   ├── raw/                    # Dữ liệu gốc tải từ tập youtube-new (CSV, JSON)
-│   └── mock/                   # Dữ liệu mẫu thu nhỏ (VD: 10MB) để test script nhanh trên local
-├── docker/                     # Phục vụ Phase 1 
-│   ├── docker-compose.yml      # File cấu hình khởi tạo cụm HDFS, Spark, Hive trên nền Linux
-│   └── hadoop_conf/            # Các file config (core-site.xml, hdfs-site.xml) cho cluster
-├── src/                        # Chứa các hàm xử lý lõi (Tránh viết code dài dòng trong Notebook)
-│   ├── etl_module.py           # Phase 2: Script đẩy HDFS, làm sạch, ép kiểu và lưu Hive
-│   ├── ml_module.py            # Phase 4: Pipeline VectorAssembler và K-Means
-│   └── graph_module.py         # Phase 5: Script tạo Vertices, Edges và chạy thuật toán đồ thị
-├── notebooks/                  # Phục vụ Phase 6 (Presentation Layers - Trình diễn trực quan)
-│   ├── 01_Basic_Analysis.ipynb     # Mapping với Phase 6.1 (Thống kê mô tả)
-│   ├── 02_Advanced_Analysis.ipynb  # Mapping với Phase 6.2 (Thời gian, không gian, hành vi)
-│   ├── 03_Machine_Learning.ipynb   # Mapping với Phase 6.3 (Kết quả gom cụm video)
-│   ├── 04_Graph_Processing.ipynb   # Mapping với Phase 6.4 (Mạng lưới đồ thị)
-│   └── Master_Presentation.ipynb   # Kịch bản chính import các hàm từ src/ 
-├── tests/                      # Chốt chặn kiểm soát chất lượng dữ liệu 
-│   ├── test_etl_schema.py      # Script tự động kiểm tra data có bị Null hay sai kiểu không
-│   └── test_ml_pipeline.py     # Script kiểm tra model K-Means có output ra đúng Cluster_ID
-├── docs/                       # Phục vụ Phase 7
-│   ├── Data_Schema_Contract.md # Tài liệu cực kỳ quan trọng: Định nghĩa các cột của bảng Hive
-│   └── System_Architecture.png # Sơ đồ kiến trúc triển khai
-├── .gitignore                  # Block thư mục data/raw, .ipynb_checkpoints, .DS_Store
-├── requirements.txt            # pyspark, pandas, plotly, pyvis, pytest...
-└── README.md                   # Hướng dẫn clone code và khởi động môi trường
+credit-transaction-fraud-bigdata/
+├── data/                               # Dữ liệu cục bộ (Được quản lý trong .gitignore)
+│   ├── raw/                            # Dữ liệu thô gốc hoặc simulated-data-raw-csv
+│   │   └── simulated-data-raw-csv/     # Dữ liệu mô phỏng giao dịch 24 tháng (transactions_month_2018-04.csv -> 2020-03.csv)
+│   └── mock/                           # Dữ liệu mẫu thu nhỏ (2 tháng) để test script nhanh trên local
+├── docker/                             # Cấu hình hạ tầng containerized
+│   ├── docker-compose.yml              # Khởi tạo cụm HDFS, Spark Master/Worker, Hive Metastore & Server, JupyterLab
+│   └── hadoop_conf/                    # Các file cấu hình (core-site.xml, hdfs-site.xml, hive-site.xml)
+├── src/                                # Thư mục chứa module xử lý lõi PySpark (Spark DataFrame API)
+│   ├── etl_module_credit_transaction.py # Ingestion HDFS, làm sạch, biến đổi Spark DataFrame & lưu Hive Warehouse
+│   ├── ml_module.py                    # Pipeline Spark MLlib (VectorAssembler & mô hình dự đoán gian lận)
+│   └── graph_module.py                 # Spark GraphFrames (Tạo Vertices, Edges & phân tích mạng lưới rủi ro)
+├── notebooks/                          # Jupyter Notebooks trình diễn trực quan
+│   ├── 00_SimulatedDataset.ipynb       # Khám phá cấu trúc dữ liệu mô phỏng
+│   ├── 01_Behavioral_Analysis.ipynb    # Phân tích hành vi giao dịch & mẫu hình gian lận
+│   ├── 03_Machine_Learning.ipynb       # Huấn luyện & đánh giá mô hình ML dự đoán gian lận
+│   └── 04_Spark_GraphFrame_Demo.ipynb  # Phân tích mạng lưới liên kết Customer - Terminal
+├── tests/                              # Bộ kiểm thử chất lượng dữ liệu & xác minh ETL
+│   ├── test_credit_transaction_etl.py  # Unit test PySpark DataFrame schema, null handling & calculations
+│   └── verify_credit_transaction_import.py # Script kiểm tra số lượng bản ghi & thống kê trong Hive
+├── docs/                               # Tài liệu thiết kế & quy chuẩn dữ liệu
+│   └── credit_data_schema.md           # Định nghĩa chi tiết schema bảng Hive credit_transaction_db.cleaned_transactions
+├── .gitignore                          # Loại trừ các file dữ liệu thô dung lượng lớn & checkpoints
+├── requirements.txt                    # Thư viện phụ thuộc: pyspark, pandas, plotly, pytest...
+└── README.md                           # Hướng dẫn khởi chạy hệ thống & thực thi Spark DataFrame ETL
