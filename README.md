@@ -84,3 +84,25 @@ pytest tests/test_credit_transaction_etl.py -v
 ```bash
 docker exec namenode hdfs dfs -ls /credit_transaction/processed/parquet
 ```
+
+## IV. Data Analysis & Modeling Notebooks
+
+The directory `notebooks/` contains Jupyter Notebooks for data simulation, advanced analysis, and graph analytics for fraud detection:
+
+1. `00_SimulatedDataset.ipynb`:
+   - Simulates a credit card transaction dataset containing both valid and fraudulent transactions with a class imbalance dataset.
+
+2. `01_Behavioral_Analysis.ipynb`:
+   - Analyze the behavior of customers and terminals to detect fraudulent activities.
+
+3. `02_Advanced_Analysis.ipynb`:
+   - Analyzes fraud rate patterns across hours, days of the week, and timeline.
+
+4. `03_Machine_Learning.ipynb`:
+   - Apply MLlib to train models for fraud detection and classification.
+
+5. `04_Graph_Analysis.ipynb`:
+   - Apply GraphFrames to analyze transaction network graphs for fraud detection.
+
+6. `05_Spark_GraphFrame_Demo.ipynb`:
+   - Demo usage of GraphFrames in Presentation 02
