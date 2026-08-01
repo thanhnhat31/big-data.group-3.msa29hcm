@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Raw data (keep out of git — large simulated CSVs live locally / Docker volume)
+data/raw/
+data/simulated-data-raw-csv/
+simulated-data-raw-csv/
+.DS_Store

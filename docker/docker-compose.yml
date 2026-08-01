@@ -1,0 +1,151 @@
+name: credit-transaction
+
+services:
+  # ==========================================
+  # 1. HADOOP HDFS CLUSTER (Storage data)
+  # ==========================================
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    ports:
+      - "9870:9870" # Web UI of HDFS
+      - "9000:9000" # Internal communication port
+    environment:
+      - CLUSTER_NAME=credit-transaction-cluster
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    networks:
+      - credit-transaction-network
+    volumes:
+      - namenode_data:/hadoop/dfs/name
+      - ./hadoop_conf:/etc/hadoop
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870
+      - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+    networks:
+      - credit-transaction-network
+    volumes:
+      - datanode_data:/hadoop/dfs/data
+      - ./hadoop_conf:/etc/hadoop
+    depends_on:
+      - namenode
+
+  # ==========================================
+  # 2. CỤM HIVE (Data Warehouse & Schema)
+  # ==========================================
+  hive-metastore-postgresql:
+    image: postgres:13
+    container_name: hive-metastore-postgresql
+    environment:
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+      POSTGRES_DB: metastore
+    networks:
+      - credit-transaction-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: hive-metastore
+    restart: unless-stopped
+    environment:
+      - SERVICE_PRECONDITION=namenode:9870 hive-metastore-postgresql:5432
+    command: /opt/hive/bin/hive --service metastore
+    networks:
+      - credit-transaction-network
+    ports:
+      - "9083:9083"
+    volumes:
+      - ./hadoop_conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+    depends_on:
+      - namenode
+      - hive-metastore-postgresql
+
+  hive-server:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: hive-server
+    restart: unless-stopped
+    environment:
+      - SERVICE_PRECONDITION=hive-metastore:9083
+      - HADOOP_HEAPSIZE=2048
+    command: /opt/hive/bin/hive --service hiveserver2
+    ports:
+      - "10000:10000" # JDBC port to connect SQL
+    networks:
+      - credit-transaction-network
+    volumes:
+      - ./hadoop_conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+    depends_on:
+      - hive-metastore
+
+  # ==========================================
+  # 3. SPARK CLUSTER (Processing)
+  # ==========================================
+  spark-master:
+    image: docker.io/apache/spark:3.5.2
+    container_name: spark-master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "8080:8080" # Web UI of Spark Master
+      - "7077:7077"
+    networks:
+      - credit-transaction-network
+
+  spark-worker:
+    image: docker.io/apache/spark:3.5.2
+    container_name: spark-worker
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=4G
+    networks:
+      - credit-transaction-network
+    depends_on:
+      - spark-master
+
+  # ==========================================
+  # 4. JUPYTERLAB (IDE)
+  # ==========================================
+  jupyter-lab:
+    image: jupyter/all-spark-notebook:latest
+    container_name: jupyter-lab
+    ports:
+      - "8888:8888" # Open the browser at http://localhost:8888
+      - "4041:4040" # Spark Application UI
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - SPARK_MASTER=spark://spark-master:7077
+      - JUPYTER_TOKEN=credit135
+      - PYTHONPATH=/home/jovyan
+    volumes:
+      - ../notebooks:/home/jovyan/notebooks
+      - ../src:/home/jovyan/src
+      - ../data:/home/jovyan/data
+      - ../tests:/home/jovyan/tests
+      # Mount full dataset directly (symlink breaks on Docker Desktop Mac)
+      - ../simulated-data-raw-csv:/home/jovyan/data/simulated-data-raw-csv
+      # Mount hive-site.xml vào thư mục conf tùy chỉnh để tránh lỗi busy device
+      - ./hadoop_conf/hive-site.xml:/home/jovyan/hive-site.xml
+    networks:
+      - credit-transaction-network
+    depends_on:
+      - spark-master
+      - hive-metastore
+
+networks:
+  credit-transaction-network:
+    driver: bridge
+
+volumes:
+  namenode_data:
+  datanode_data:
+  postgres_data:
