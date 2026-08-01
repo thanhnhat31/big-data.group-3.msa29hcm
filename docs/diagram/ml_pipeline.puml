@@ -1,0 +1,27 @@
+@startuml ML_Pipeline_Workflow
+skinparam backgroundColor #FFFFFF
+skinparam activityShape roundBox
+
+title Machine Learning (ML) Pipeline Workflow
+
+start
+
+:Cleaned Data Ingestion from Hive;
+
+:Feature Selection & Label Leakage Exclusion;
+
+:Class Weighting Calculation (Inverse Frequency);
+
+:Train / Test Data Splitting;
+
+partition "Spark ML Pipeline" {
+  :VectorAssembler (Pack 8 Features into Vector);
+  :StandardScaler (Z-Score Feature Normalization);
+  :LogisticRegression Training (Weighted Classifier);
+}
+
+:Model Evaluation (PR-AUC & ROC-AUC Metrics);
+
+stop
+
+@enduml

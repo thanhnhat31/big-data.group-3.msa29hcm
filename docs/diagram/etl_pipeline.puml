@@ -1,0 +1,20 @@
+@startuml ETL_Pipeline_Workflow
+skinparam backgroundColor #FFFFFF
+skinparam activityShape roundBox
+
+title ETL Pipeline Workflow
+
+start
+:Step 1: Data Ingestion;
+
+:Step 2: Data Cleaning & Schema Casting;
+
+:Step 3: Feature Engineering & Window Aggregations;
+
+:Step 4: Intermediate Parquet Storage;
+
+:Step 5: Hive Data Warehouse Registration;
+
+stop
+
+@enduml

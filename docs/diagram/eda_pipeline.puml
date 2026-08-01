@@ -1,0 +1,26 @@
+@startuml EDA_Pipeline_Workflow
+skinparam backgroundColor #FFFFFF
+skinparam activityShape roundBox
+
+title Exploratory Data Analysis (EDA) Pipeline Workflow
+
+start
+
+:Cleaned Data Ingestion from Hive;
+
+fork
+  :Behavioral Analysis Pipeline;
+
+fork again
+  :Advanced Analysis Pipeline;
+ 
+fork again
+  :Graph Analytics Pipeline;
+  
+end fork
+
+:Analysis Insights and Visualization;
+
+stop
+
+@enduml
